@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-app.get('/api/services/:env',cors(), async (req, res) => {
+app.get('/:env/api/services',cors(), async (req, res) => {
   const env = req.params['env']
   res.set('Content-Type', 'application/json');
   let response = await getApps(env);
@@ -20,7 +20,7 @@ app.get('/api/services/:env',cors(), async (req, res) => {
 });
 
 
-app.get('/api/application/:env/:name',cors(), async (req, res) => {
+app.get('/:env/api/application/:name',cors(), async (req, res) => {
     const appName = req.params['name']
     const env = req.params['env']
     let response = await getApps(env);

@@ -34,7 +34,7 @@ export default function Dashboard() {
   },[]);
 
   const fetchServers = async (serviceName) => {
-    const response = await eurekaService.get(`/api/application/${serviceName}`);
+    const response = await eurekaService('dev').get(`/api/application/${serviceName}`);
     let serverDetails = response.data.map( (server) => {
       return { 
         hostName: server.hostName,
@@ -49,7 +49,7 @@ export default function Dashboard() {
 
   const getServiceArray= () => {
     let a = result.map((obj, index) => {
-      return [index + 1,obj.name, obj.instance.length, obj.instance[0].port.$.toString()]
+      return [(index + 1).toString(),obj.name, obj.instance.length.toString(), obj.instance[0].port.$.toString()]
     })
     return a
   }
