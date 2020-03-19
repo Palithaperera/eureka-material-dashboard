@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from 'react';
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
-import BugReport from "@material-ui/icons/BugReport";
-import Code from "@material-ui/icons/Code";
-import Cloud from "@material-ui/icons/Cloud";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import Table from "components/Table/Table.js";
-import Tasks from "components/Tasks/Tasks.js";
-import CustomTabs from "components/CustomTabs/CustomTabs.js";
+import ServerTable from "components/Table/serverTable.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-
-import { bugs, website, server } from "variables/general.js";
-
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Backdrop from '@material-ui/core/Backdrop';
 import eurekaService from "../../API/eurekaService";
 
 
@@ -27,53 +22,88 @@ const useStyles = makeStyles(styles);
 
 export default function Dashboard() {
   const [result, setResult] = useState(null);
-
-  const renderServices = () => {
-    let a = result.map((obj, index) => {
-      return [index + 1,obj.name, obj.instance.length, obj.instance[0].port.$.toString()]
-    })
-  return a
-  }
+  const [selectedServers, setSelectedServers] = useState(null);
 
   useEffect( () => {
     let getServices = async () => {
-      const response = await eurekaService.get("/api/services");      
+      const response = await eurekaService('dev').get("/api/services");      
       setResult(response.data);
-      console.log(response.data);
     }
 
     getServices();    
   },[]);
 
+  const fetchServers = async (serviceName) => {
+    const response = await eurekaService.get(`/api/application/${serviceName}`);
+    let serverDetails = response.data.map( (server) => {
+      return { 
+        hostName: server.hostName,
+        healthUrl: server.healthUrl,
+        ip: server.ip,
+        healthData: server.healthData
+      }
+    } );
+
+    setSelectedServers(serverDetails);
+  }
+
+  const getServiceArray= () => {
+    let a = result.map((obj, index) => {
+      return [index + 1,obj.name, obj.instance.length, obj.instance[0].port.$.toString()]
+    })
+    return a
+  }
+
+  const renderServices = () => {
+    return <Card>
+            <CardHeader color="success">
+              <h4 className={classes.cardTitleWhite}>Service Stats</h4>
+              <p className={classes.cardCategoryWhite}>
+                Service health data on all services.
+              </p>
+            </CardHeader>
+            <CardBody>
+              <Table
+                tableHeaderColor="warning"
+                tableHead={["ID", "Name", "Instances", "Port"]}
+                tableData={getServiceArray()}
+                fetchServers={fetchServers}
+              />
+            </CardBody>
+        </Card>
+  }
+
+  const renderServers = () => {
+    return <Card>
+              <CardHeader color="success">
+                <h4 className={classes.cardTitleWhite}>Server Stats</h4>
+                <p className={classes.cardCategoryWhite}>
+                  Service health data on all servers.
+                </p>
+              </CardHeader>
+              <CardBody>
+                <ServerTable selectedServers={selectedServers}/>
+              </CardBody>
+          </Card>
+  }
+  
   const classes = useStyles();
 
   let content;
 
-  if(result){
+  if(result || selectedServers){
     content = <div>    
   
   <GridContainer>
-    <GridItem xs={12} sm={12} md={6}>
-        <Card>
-          <CardHeader color="warning">
-            <h4 className={classes.cardTitleWhite}>Service Stats</h4>
-            <p className={classes.cardCategoryWhite}>
-              Service health data on all services.
-            </p>
-          </CardHeader>
-          <CardBody>
-            <Table
-              tableHeaderColor="warning"
-              tableHead={["ID", "Name", "Instances", "Port"]}
-              tableData={renderServices()}
-            />
-          </CardBody>
-        </Card>
+    <GridItem xs={12} sm={12} md={12}>
+        {selectedServers ? renderServers() : renderServices()}
     </GridItem>
   </GridContainer>
 </div>
   }else {
-    content = <div>Loading ....</div>
+    content = <Backdrop open>
+    <CircularProgress color='#fff'/>
+  </Backdrop>
   }
 
   

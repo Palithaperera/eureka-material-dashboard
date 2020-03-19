@@ -10,12 +10,13 @@ import TableCell from "@material-ui/core/TableCell";
 // core components
 import styles from "assets/jss/material-dashboard-react/components/tableStyle.js";
 import Link from '@material-ui/core/Link';
+import eurekaService from "../../API/eurekaService";
 
 const useStyles = makeStyles(styles);
 
 export default function CustomTable(props) {
   const classes = useStyles();
-  const { tableHead, tableData, tableHeaderColor } = props;
+  const { tableHead, tableData, tableHeaderColor, fetchServers } = props;
   return (
     <div className={classes.tableResponsive}>
       <Table className={classes.table}>
@@ -37,6 +38,7 @@ export default function CustomTable(props) {
         ) : null}
         <TableBody>
           {tableData.map((prop, key) => {
+            let serviceName = prop[1];
             return (
               <TableRow key={key} className={classes.tableBodyRow}>
                 {prop.map((prop, key) => {
@@ -46,10 +48,8 @@ export default function CustomTable(props) {
                     </TableCell>
                   );
                 })}
-                <TableCell className={classes.tableCell}><Link href="#" onClick={(e) => {
-                  let key = key;
-                  alert("Clicked " + e)
-                  }}>Detail</Link></TableCell>
+                <TableCell className={classes.tableCell}><Link href="#" onClick={() => fetchServers(serviceName)}>Detail</Link>
+                </TableCell>
               </TableRow>
             );
           })}

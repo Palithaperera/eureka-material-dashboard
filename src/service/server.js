@@ -12,16 +12,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-app.get('/api/services',cors(), async (req, res) => {
+app.get('/api/services/:env',cors(), async (req, res) => {
+  const env = req.params['env']
   res.set('Content-Type', 'application/json');
-  let response = await getApps();
+  let response = await getApps(env);
   res.send(response);
 });
 
 
-app.get('/api/application/:name',cors(), async (req, res) => {
-    let appName = req.params['name']
-    let response = await getApps();
+app.get('/api/application/:env/:name',cors(), async (req, res) => {
+    const appName = req.params['name']
+    const env = req.params['env']
+    let response = await getApps(env);
     let app = response.find( (obj) =>
         obj.name === appName
     );
@@ -43,9 +45,9 @@ app.get('/api/application/:name',cors(), async (req, res) => {
     res.send(instances);
 });
 
-const getApps = async () => {
+const getApps = async (env) => {
   let responseObj;
-  await eurekaService.get('/eureka/apps')
+  await eurekaService(env).get('/eureka/apps')
   .then(response => {
     responseObj = response.data;
   })
@@ -67,5 +69,7 @@ const getHealth = async (healthUrl) => {
   }
   return response.data;
 }
+
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
