@@ -6,6 +6,14 @@ import {
 } from "assets/jss/material-dashboard-react.js";
 
 const dashboardStyle = {
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  placeholder: {
+    height: 40,
+  },
   backdrop: {
     color: '#ffh',
   },

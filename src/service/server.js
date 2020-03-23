@@ -15,14 +15,18 @@ app.use(cors());
 app.get('/:env/api/services',cors(), async (req, res) => {
   const env = req.params['env']
   res.set('Content-Type', 'application/json');
-  let response = await getApps(env);
+  let apps = await getApps(env);
+
+  let response = apps.map((obj, index) => {
+    return [(index + 1).toString(),obj.name, obj.instance.length.toString(), `${obj.instance[0].ipAddr}:${obj.instance[0].port.$.toString()}`]
+  })
   res.send(response);
 });
 
 
 app.get('/:env/api/application/:name',cors(), async (req, res) => {
     const appName = req.params['name']
-    const env = req.params['env']
+    const env = req.params['env'].toUpperCase();
     let response = await getApps(env);
     let app = response.find( (obj) =>
         obj.name === appName
@@ -31,14 +35,8 @@ app.get('/:env/api/application/:name',cors(), async (req, res) => {
     let instances;
     if(app.instance) {
       instances = await Promise.all( app.instance.map( async (instance) => {
-          let healthUrl = `http://${instance.ipAddr}:${instance.port.$}/health`;
-          let healthData = await getHealth(healthUrl)
-          return {
-            healthUrl: healthUrl,
-            hostName: instance.hostName,
-            ip: instance.ipAddr,
-            healthData: healthData
-          }
+          let healthData = await getHealth(instance)
+          return healthData;
         })
       );
     }
@@ -58,16 +56,20 @@ const getApps = async (env) => {
   return responseObj.applications.application;
 }
 
-const getHealth = async (healthUrl) => {
+const getHealth = async (instance) => {
+  let healthUrl = `http://${instance.ipAddr}:${instance.port.$}/health`;
   let response;
-  try{
+  try {
     response = await axios.get(healthUrl);
-    console.log(response);
   } catch(error) {
-    console.log(error);
-    return null;
+    console.log('Health data get failed for: ' + healthUrl);
   }
-  return response.data;
+  return {
+    healthUrl: healthUrl,
+    hostName: instance.hostName,
+    ip: instance.ipAddr,
+    healthData: response && response.data
+  };
 }
 
 

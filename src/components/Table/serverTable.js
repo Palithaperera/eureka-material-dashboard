@@ -46,7 +46,7 @@ export default function Tasks(props) {
                 { value.ip }
             </TableCell>
             <TableCell className={classes.TableCell}>
-                <JSONTree data={value.healthData} />
+                {value.healthData ? <JSONTree data={value.healthData} /> : <p>No Health Data.</p>}
             </TableCell>
           </TableRow>
         ))}

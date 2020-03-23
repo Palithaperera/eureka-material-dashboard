@@ -43,10 +43,10 @@ export default function Header(props) {
             {makeBrand()}
           </Button>
         </div>
-        <Hidden smDown implementation="css">
+        {/* <Hidden smDown implementation="css"> */}
           {props.rtlActive ? <RTLNavbarLinks /> : <AdminNavbarLinks />}
-        </Hidden>
-        <Hidden mdUp implementation="css">
+        {/* </Hidden> */}
+        {/* <Hidden mdUp implementation="css"> */}
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -54,7 +54,7 @@ export default function Header(props) {
           >
             <Menu />
           </IconButton>
-        </Hidden>
+        {/* </Hidden> */}
       </Toolbar>
     </AppBar>
   );

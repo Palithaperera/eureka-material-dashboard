@@ -98,7 +98,7 @@ export default function Sidebar(props) {
   );
   return (
     <div>
-      <Hidden mdUp implementation="css">
+      {/* <Hidden mdUp implementation="css"> */}
         <Drawer
           variant="temporary"
           anchor={props.rtlActive ? "left" : "right"}
@@ -125,8 +125,8 @@ export default function Sidebar(props) {
             />
           ) : null}
         </Drawer>
-      </Hidden>
-      <Hidden smDown implementation="css">
+      {/* </Hidden> */}
+      {/* <Hidden smDown implementation="css"> */}
         <Drawer
           anchor={props.rtlActive ? "right" : "left"}
           variant="permanent"
@@ -146,7 +146,7 @@ export default function Sidebar(props) {
             />
           ) : null}
         </Drawer>
-      </Hidden>
+      {/* </Hidden> */}
     </div>
   );
 }

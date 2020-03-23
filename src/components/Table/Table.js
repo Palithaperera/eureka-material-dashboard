@@ -33,6 +33,9 @@ export default function CustomTable(props) {
                   </TableCell>
                 );
               })}
+              <TableCell className={classes.tableCell + " " + classes.tableHeadCell}>
+                Details
+              </TableCell>
             </TableRow>
           </TableHead>
         ) : null}
